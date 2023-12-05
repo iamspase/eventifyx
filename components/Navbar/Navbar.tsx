@@ -24,7 +24,7 @@ export default function Navbar() : JSX.Element {
             <NavLink name="Pricing" path="/pricing" />
             <NavLink name="Contact" path="/contact" />
 
-            <Link href={"/auth/sign-in"}>
+            <Link href={"/auth/sign-up"}>
               <button className="bg-indigo-500 transition hover:bg-indigo-500 text-white py-2 md:py-1 w-full mt-3 md:mt-0 md:w-20 text-sm font-medium rounded-md">Sign in</button>
             </Link>
           </ul>
