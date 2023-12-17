@@ -5,8 +5,9 @@ import Logo from "../Logo/Logo";
 import NavLink from "./NavLink/NavLink";
 import { FiMenu } from "react-icons/fi";
 import Link from "next/link";
+import NavbarDropdownMenu from "../NavbarDropdownMenu/NavbarDropdownMenu";
 
-export default function Navbar() : JSX.Element {
+export default function Navbar({ user }: { user: any }): JSX.Element {
   const [navOpen, setNavOpen] = useState<boolean>(false);
 
   return (
@@ -21,11 +22,15 @@ export default function Navbar() : JSX.Element {
           <ul className="md:flex md:justify-between md:items-center md:w-80">
             <NavLink name="Home" path="/" />
             <NavLink name="Events" path="/events" />
-            <NavLink name="Pricing" path="/pricing" />
+            <NavLink name="Tokens" path="/tokens" />
 
-            <Link href={"/auth/sign-in"}>
-              <button className="bg-indigo-500 transition hover:bg-indigo-500 text-white py-2 md:py-1 w-full mt-3 md:mt-0 md:w-20 text-sm font-medium rounded-md">Sign in</button>
-            </Link>
+            {
+              !user ?
+                <Link href={"/auth/sign-in"}>
+                  <button className="bg-indigo-500 transition hover:bg-indigo-500 text-white py-2 md:py-1 w-full mt-3 md:mt-0 md:w-20 text-sm font-medium rounded-md">Sign in</button>
+                </Link> :
+                  <NavbarDropdownMenu />
+            }
           </ul>
         </nav>
       </div>

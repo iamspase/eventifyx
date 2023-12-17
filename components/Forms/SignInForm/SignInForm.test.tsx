@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react"
 import SignInForm from "./SignInForm"
 
-describe("Sign In Form", () => {
+describe("SignInForm", () => {
   it("Renders successfully", () => {
     render(<SignInForm />)
   })

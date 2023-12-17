@@ -3,6 +3,9 @@
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const schema = yup.object({
   username: yup.string()
@@ -24,14 +27,41 @@ export default function SignUpForm() : JSX.Element {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
+  const [error, setError] = useState<string>("");
+  const supabase = createClientComponentClient();
+  const router = useRouter();
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const handleSignUp = async (inputs : {
+    email: string,
+    username: string,
+    password: string
+  }) => {
+    const { email, username, password } = inputs;
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${location.origin}/auth/callback`,
+      }
+    });
+
+    await supabase.from('UserData').insert({
+      username,
+    });
+
+    if(error) {
+      console.log(error);
+      setError("User already registered.");
+      return;
+    }
+
+    router.push("/");
   }
 
   return (
     <div className="mt-8 mb-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+      <form onSubmit={handleSubmit(handleSignUp)} className="flex flex-col">
         <label htmlFor="username" className="my-2 font-medium text-sm text-zinc-300">Username</label>
         <input {...register("username")} type="text" placeholder="johnsmith" name="username" className="py-2 px-2 rounded-md bg-zinc-800 text-zinc-200 focus:ring-2 focus:ring-indigo-500 outline-none border-none"/>
         <p className="text-red-400 font-medium text-sm mt-1">{errors.username?.message}</p>
@@ -47,6 +77,8 @@ export default function SignUpForm() : JSX.Element {
         <label htmlFor="confirmPassword" className="my-2 font-medium text-sm text-zinc-300">Confirm Password</label>
         <input type="password" placeholder="Confirm your secret password" name="confirmPassword" className="py-2 px-2 rounded-md bg-zinc-800 text-zinc-200 focus:ring-2 focus:ring-indigo-500 outline-none border-none"/>
         <p className="text-red-400 font-medium text-sm mt-1"></p>
+
+        <p className="my-3 text-red-400 font-medium text-sm">{error}</p>
 
         <input type="submit" value={'Sign up'} className="bg-gradient-to-r from-indigo-400 to-indigo-600 py-2 rounded-md mt-6 font-medium text-sm cursor-pointer" />
       </form>
